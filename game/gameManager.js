@@ -1,3 +1,7 @@
+/**
+ * Manage and set up the game
+ */
+
 const algorithm = require("./algorithm");
 
 // The board used by our algorithm to compute the best move to play
