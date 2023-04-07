@@ -1,13 +1,4 @@
 
-let boardAlgo = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-];
 let start;
 let legalMovesToFind;
 let legalMovesToGet;
@@ -19,9 +10,13 @@ let moveWinsInMC;
 let simulationsInMC;
 let newBoardAfterMove;
 
+function getColumn(board) {
+    setup(board);
+    return nextMove();
+}
+
 function setup(board) {
     boardAlgo=board;
-    nextMove();
 }
 
 function nextMove() {
@@ -229,4 +224,4 @@ function isWin(board, line,column) {
     return count >= 4;
 }
 
-exports.setup = setup;
+exports.getColumn = getColumn;
