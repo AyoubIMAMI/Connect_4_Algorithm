@@ -39,7 +39,7 @@ function boardConverter(stringBoard){
  * @returns {Promise<unknown>} the column to play in
  */
 async function play(board) {
-    return algorithm.getColumn(board);
+    return algorithm.getBestColumnToPlayIn(board);
 }
 
 exports.play = play;

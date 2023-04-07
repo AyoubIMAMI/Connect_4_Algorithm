@@ -10,7 +10,7 @@ let moveWinsInMC;
 let simulationsInMC;
 let newBoardAfterMove;
 
-function getColumn(board) {
+function getBestColumnToPlayIn(board) {
     setup(board);
     return nextMove();
 }
@@ -224,4 +224,4 @@ function isWin(board, line,column) {
     return count >= 4;
 }
 
-exports.getColumn = getColumn;
+exports.getBestColumnToPlayIn = getBestColumnToPlayIn;
