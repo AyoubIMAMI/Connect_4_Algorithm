@@ -11,7 +11,11 @@ let simulationsInMC;
 let newBoardAfterMove;
 
 function getBestColumnToPlayIn(board) {
+    console.log("before");
+    console.log(moveWinsInMC);
     moveWinsInMC = Array(7).fill(0);
+    console.log("after");
+    console.log(moveWinsInMC);
     start = performance.now();
     return monteCarlo(board, 1, start,2000);
 }
@@ -77,11 +81,11 @@ function monteCarlo(board, player, start,time) {
         simulationsInMC = 0;
         let finalMove;
         let notFinished=true;
-        let compt=0;
+        let counter = 0;
         let iteration=0;
         let timer = performance.now();
         while (notFinished) {
-            while (timer<time/10){
+            while (performance.now() - timer <= time/10){
 
                 for (const move of legalMovesInMC) {
                     iteration++;
@@ -89,7 +93,7 @@ function monteCarlo(board, player, start,time) {
                     let result;
                     if (isWin(newBoard, findRaw(newBoard, move) - 1, move)) {
                         result = 1;
-                        compt++;
+                        counter++;
                     }
                     else if (isTie(newBoard)) {
                         result = 0.5;
@@ -112,12 +116,18 @@ function monteCarlo(board, player, start,time) {
                         break;
                     } // stop if time limit reached
                 }
-                let currentMax = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
-                let threshold = 0.8; // Set the threshold to 20%
-
-                let moveWinsInMC = moveWinsInMC.filter(value => value >= (currentMax * threshold));
-                time=performance.now();
             }
+            console.log("test");
+            console.log(performance.now() - timer);
+            console.log("old all moves:");
+            console.log(moveWinsInMC);
+            let currentMax = Math.max(...moveWinsInMC);
+            let threshold = 0.8; // Set the threshold to 20%
+
+            //moveWinsInMC.forEach(value => value >= (currentMax * threshold)?legalMovesInMC);
+            console.log("futur all moves:");
+            console.log(moveWinsInMC);
+            timer=performance.now();
         }
         setTimeout(resolve,0,finalMove);
     });
