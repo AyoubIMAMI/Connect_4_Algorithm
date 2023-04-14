@@ -129,7 +129,7 @@ function monteCarlo(board, player, start,time) {
             console.log(moveWinsInMC);
             timer=performance.now();
         }
-        setTimeout(resolve,0,finalMove);
+        setTimeout(resolve,0,finalMove[0]);
     });
 }
 
