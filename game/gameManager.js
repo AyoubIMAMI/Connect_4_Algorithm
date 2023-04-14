@@ -5,15 +5,7 @@
 const algorithm = require("./algorithm");
 
 // The board used by our algorithm to compute the best move to play
-let board = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-];
+let board;
 
 /**
  * Convert the string board into an array
@@ -23,22 +15,34 @@ let board = [
  * @param stringBoard
  */
 function boardConverter(stringBoard){
-    for (let i = 0; i < 7; i++) {
-        for (let j = 0; j < 8; j++) {
-            if(stringBoard[i*7+j] === 'm')
-                board = 1;
-            else if (stringBoard[i*7+j] === 'h')
-                board = -1;
+    // The board used by our algorithm to compute the best move to play
+    board = [
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+    ];
+
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 7; j++) {
+            if(stringBoard[j*6+i] === 'm')
+                board[j][i] = 1;
+            else if (stringBoard[j*6+i] === 'h')
+                board[j][i] = -1;
         }
     }
 }
 
 /**
  * Call the algorithm to get the best move
- * @param board as an array
+ * @param stringBoard as a string
  * @returns {Promise<unknown>} the column to play in
  */
-async function play(board) {
+async function play(stringBoard) {
+    boardConverter(stringBoard);
     return algorithm.getBestColumnToPlayIn(board);
 }
 

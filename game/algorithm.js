@@ -11,18 +11,8 @@ let simulationsInMC;
 let newBoardAfterMove;
 
 function getBestColumnToPlayIn(board) {
-    setup(board);
-    return nextMove();
-}
-
-function setup(board) {
-    boardAlgo=board;
-}
-
-function nextMove() {
     moveWinsInMC = Array(7).fill(0);
     start = performance.now();
-
     return monteCarlo(board, 1, start,2000);
 }
 
@@ -87,7 +77,7 @@ function monteCarlo(board, player, start,time) {
         simulationsInMC = 0;
         let finalMove;
         let notFinished=true;
-        let compt=0;
+        let counter = 0;
         let iteration=0;
         while (notFinished) {
             for (const move of legalMovesInMC) {
@@ -96,7 +86,7 @@ function monteCarlo(board, player, start,time) {
                 let result;
                 if (isWin(newBoard, findRaw(newBoard, move) - 1, move)) {
                     result = 1;
-                    compt++;
+                    counter++;
                 }
                 else if (isTie(newBoard)) {
                     result = 0.5;

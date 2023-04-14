@@ -12,7 +12,7 @@
  * @returns {boolean}
  */
 function isBoardValid(board) {
-    return board != null && board.length === 42 && /^[mh0]+$/.test(board);
+    return board !== null && board.length === 42 && /^[mh0]+$/.test(board);
 }
 
 /**
@@ -27,7 +27,6 @@ function isBoardLegal(board) {
     for(let i = 0; i < board.length; i++)
         if(i % ROWS !== 0 && board[i] !== EMPTY && board[i - 1] === EMPTY)
             return false;
-
     return true;
 }
 
