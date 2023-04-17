@@ -3,7 +3,6 @@
 This is a nodeJS REST-API application to play to the Connect4 game. The used algorithm is derived from Monte Carlo.
 
 ### Authors
-- [Ali HAITAM](https://github.com/alihaitam)
 - [Mourad KARRAKCHOU](https://github.com/MouradKarrakchou)
 - [Ayoub IMAMI](https://github.com/AyoubIMAMI)
 
