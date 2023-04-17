@@ -1,4 +1,9 @@
-const gameVerification = require("./gameVerification");
+/**
+ * Compute the best move to play and find the best column
+ * Derived of the Monte Carlo
+ */
+
+const gameVerification = require("./gameManager");
 
 // An array used to choose the best column depending on its win rate
 let moveWinsInMC;
