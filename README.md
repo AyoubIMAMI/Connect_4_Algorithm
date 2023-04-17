@@ -24,7 +24,7 @@ docker run -d --name Connect4 -p 3000:3000 youbima/connect4:v1.0
 
 ### Run the project using Docker
 
-- Go to the **back** folder
+- Go to the **back** folder after cloning th project
 ```sh
 cd back
 ```
@@ -35,7 +35,7 @@ cd back
 ```
 
 ### Run the project using NodeJS
-- Go to the **back** folder
+- Go to the **back** folder after cloning the project
 ```sh
 cd back
 ```
