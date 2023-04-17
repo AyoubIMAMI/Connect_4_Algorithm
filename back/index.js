@@ -1,5 +1,5 @@
 const express = require('express');
-const gameManager = require("./game/gameManager");
+const gameManager = require("./game/gameController");
 const inputManager = require("./input/inputManager");
 
 const app = express();
