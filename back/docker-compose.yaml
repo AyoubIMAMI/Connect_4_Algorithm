@@ -1,0 +1,9 @@
+version: '3'
+services:
+  connect4:
+    image: connect4
+    container_name: connect4
+    build: .
+    ports:
+      - "3000:3000"
+    restart: always
