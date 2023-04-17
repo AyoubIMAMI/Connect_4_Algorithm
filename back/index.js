@@ -20,13 +20,13 @@ app.get('/move', async (request, response) => {
     if(!inputManager.isBoardLegal(board))
         return response.status(400).send("Illegal board: token floating in the air");
 
-    // Verify if it is the AI turn to play and if the human played twice
-    let moveDifference = inputManager.moveCounter(board);
-    if(moveDifference === 0) response.status(422).json({detail: "Not the AI turn to play"});
-    else if(moveDifference !== 1) return response.status(400).send("Illegal board: the player or the AI has played twice");
-
     // Verify if the given board is not already in a finished configuration
     if(inputManager.isGameFinished(board)) return response.status(422).send("Game is finished: there is a winner or a draw");
+
+    // Verify if it is the AI turn to play and if the human played twice
+    let moveDifference = inputManager.moveCounter(board);
+    if(moveDifference === 0) return response.status(422).json({detail: "Not the AI turn to play"});
+    else if(moveDifference !== 1) return response.status(400).send("Illegal board: the player or the AI has played twice");
 
     try {
         // Get the move: the column
