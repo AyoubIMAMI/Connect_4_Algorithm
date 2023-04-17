@@ -1,80 +1,71 @@
+const gameVerification = require("./gameVerification");
 
-let start;
-let legalMovesToFind;
-let legalMovesToGet;
-let currPlayerSim;
-let moveSim;
-let rowToFind;
-let legalMovesInMC;
+// An array used to choose the best column depending on its win rate
 let moveWinsInMC;
-let simulationsInMC;
-let newBoardAfterMove;
 
+/**
+ * Get the best column to play in
+ * @param board as an array
+ * @returns {Promise<*>} an int which represents the column index
+ */
 function getBestColumnToPlayIn(board) {
     moveWinsInMC = Array(7).fill(0);
-    start = performance.now();
+    let start = performance.now();
     return monteCarlo(board, 1, start,2000);
 }
 
-function getLegalMoves(board) {
-    /**
-     * Returns an array of legal moves on the board.
-     */
-    legalMovesToFind = [];
-    for (let col = 0; col < 7; col++) {
-        if (board[col][5] === 0) {
-            legalMovesToFind.push(col);
+/**
+ * Returns a new board with the player's move made in the specified column.
+ * @param board as an array
+ * @param player who has to play, 1 for the AI and -1 for the human
+ * @param column in which the move is made
+ * @returns {*|null} the new board or null if the column is full
+ */
+function makeMove(board, player, column) {
+    let newBoardAfterMove = board.map(col => col.slice()); // Copy the board
+    for (let row = 0; row < 6; row++) {
+        if (newBoardAfterMove[column][row] === 0) {
+            newBoardAfterMove[column][row] = player;
+            return newBoardAfterMove;
         }
     }
-    return legalMovesToFind;
+    return null; // Column is full
 }
 
-function getRandomMove(board) {
-    /**
-     * Returns a random legal move on the board.
-     */
-    legalMovesToGet = getLegalMoves(board);
-    return legalMovesToGet[Math.floor(Math.random() * legalMovesToGet.length)];
-}
-
+/**
+ * Simulates a game on the board starting with the given player.
+ * @param board as an array
+ * @param player who has to play, 1 for the AI and -1 for the human
+ * @returns {number|number} modification of the current player, 1 or -1
+ */
 function simulateGame(board, player) {
-    /**
-     * Simulates a game on the board starting with the given player.
-     */
-    currPlayerSim = player;
+    let currPlayerSim = player;
     while (true) {
-        moveSim = getRandomMove(board);
+        let moveSim = gameVerification.getRandomMove(board);
         board = makeMove(board, currPlayerSim, moveSim);
-        if (isWin(board, findRaw(board,moveSim)-1, moveSim)) {
+        if (gameVerification.isWin(board, gameVerification.findRow(board,moveSim)-1, moveSim)) {
             return currPlayerSim;
         }
-        if (isTie(board)) {
+        if (gameVerification.isTie(board)) {
             return 0;
         }
         currPlayerSim = currPlayerSim === 1 ? -1 : 1;
     }
 }
 
-function findRaw(board, column) {
-    rowToFind = 5;
-    while(board[column][rowToFind] === 0 && rowToFind > 0) {
-        rowToFind--;
-    }
-    if(rowToFind === 0 && board[column][rowToFind] === 0){
-        return rowToFind;
-    }
-    return rowToFind + 1;
-
-}
-
+/**
+ * Runs the Monte Carlo algorithm on the board for the given player.
+ * Simulates as many games as possible in 2000ms and returns the best move based on the simulation results.
+ * @param board as an array
+ * @param player 1 for the AI and -1 for the human. Always 1 here
+ * @param start time at which the algorithm is run
+ * @param time 2000 ms
+ * @returns {Promise<unknown>} The best column to play in
+ */
 function monteCarlo(board, player, start,time) {
     return new Promise(function(resolve, reject) {
-        /**
-         * Runs the Monte Carlo algorithm on the board for the given player.
-         * Simulates as many games as possible in 100ms and returns the best move based on the simulation results.
-         */
-        legalMovesInMC = getLegalMoves(board);
-        simulationsInMC = 0;
+        let legalMovesInMC = gameVerification.getLegalMoves(board);
+        let simulationsInMC = 0;
         let finalMove;
         let notFinished=true;
         let counter = 0;
@@ -87,11 +78,11 @@ function monteCarlo(board, player, start,time) {
                     iteration++;
                     const newBoard = makeMove(board, player, move);
                     let result;
-                    if (isWin(newBoard, findRaw(newBoard, move) - 1, move)) {
+                    if (gameVerification.isWin(newBoard, gameVerification.findRow(newBoard, move) - 1, move)) {
                         result = 1;
                         counter++;
                     }
-                    else if (isTie(newBoard)) {
+                    else if (gameVerification.isTie(newBoard)) {
                         result = 0.5;
                     }
                     else {
@@ -104,7 +95,7 @@ function monteCarlo(board, player, start,time) {
                         if(Math.max(...moveWinsInMC) === 0){
                             c = legalMovesInMC[0];
                         }
-                        let r = findRaw(board,c);
+                        let r = gameVerification.findRow(board,c);
                         board[c][r] = 1;
                         finalMove=[c, r];
                         notFinished=false;
@@ -119,116 +110,16 @@ function monteCarlo(board, player, start,time) {
             let threshold = 0.8+ (Math.min(0.99,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
             console.log("threshold")
             console.log(threshold)
-            let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
-            if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
-            console.log("proba");
+            let newLegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
+            if (newLegalMovesInMC.length>1) legalMovesInMC=newLegalMovesInMC;
+            console.log("probabilities");
             console.log(moveWinsInMC);
-            console.log("futur all moves:");
+            console.log("future all moves:");
             console.log(legalMovesInMC);
             timer=performance.now();
         }
         setTimeout(resolve,0,finalMove[0] + 1);
     });
-}
-
-function makeMove(board, player, column) {
-    /**
-     * Returns a new board with the player's move made in the specified column.
-     */
-    newBoardAfterMove = board.map(col => col.slice()); // Copy the board
-    for (let row = 0; row < 6; row++) {
-        if (newBoardAfterMove[column][row] === 0) {
-            newBoardAfterMove[column][row] = player;
-            return newBoardAfterMove;
-        }
-    }
-    return null; // Column is full
-}
-
-function isTie(board) {
-    /**
-     * Returns true if the board is full and there is no winner, false otherwise.
-     */
-    for (let col = 0; col < 7; col++) {
-        if (board[col][5] === 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function isWin(board, line,column) {
-    const player = board[column][line];
-    let count = 1;
-    let j = line;
-    while (j > 0 && board[column][j - 1] === player) {
-        j--;
-        count++;
-    }
-    j = line;
-    while (j < board[column].length - 1 && board[column][j + 1] === player) {
-        j++;
-        count++;
-    }
-    if (count >= 4) {
-        return true;
-    }
-
-    // Check horizontal
-    count = 1;
-    let i = column;
-    while (i > 0 && board[i - 1][line] === player) {
-        i--;
-        count++;
-    }
-    i = column;
-    while (i < board.length - 1 && board[i + 1][line] === player) {
-        i++;
-        count++;
-    }
-    if (count >= 4) {
-        return true;
-    }
-
-    // Check diagonal (top-left to bottom-right)
-
-    count = 1;
-    i = column;
-    j = line;
-    while (i > 0 && j > 0 && board[i - 1][j - 1] === player) {
-        i--;
-        j--;
-        count++;
-    }
-    i = column;
-    j = line;
-    while (i < board.length - 1 && j < board[column].length - 1 && board[i + 1][j + 1] === player) {
-        i++;
-        j++;
-        count++;
-    }
-    if (count >= 4) {
-        return true;
-    }
-
-    // Check diagonal (bottom-left to top-right)
-    count = 1;
-    i = column;
-    j = line;
-    while (i > 0 && j < board[column].length - 1 && board[i - 1][j + 1] === player) {
-        i--;
-        j++;
-        count++;
-    }
-    i = column;
-    j = line;
-    while (i < board.length - 1 && j > 0 && board[i + 1][j - 1] === player) {
-        i++;
-        j--;
-        count++;
-    }
-
-    return count >= 4;
 }
 
 exports.getBestColumnToPlayIn = getBestColumnToPlayIn;
