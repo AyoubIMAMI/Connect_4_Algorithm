@@ -34,7 +34,6 @@ async function play(event) {
     let tab = id.split(" ");
     gameOver = !startPlay(tab);
     counter++;
-    if (gameOver || isMoveIllegal(event)) return
     await new Promise(r => setTimeout(r, 50));
     let move = await getBestColumnToPlayIn(toTab());
     gameOver = !startPlay(move);
