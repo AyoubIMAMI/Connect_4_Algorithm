@@ -2,6 +2,12 @@ let counter = 0;
 let gameOver = false;
 const mapColor = new Map();
 let littleCount=0;
+let botSmartVictories=0;
+let botRandomVictories=0;
+let draw=0;
+let botSmartWinsDisplay;
+let botRandomWinsDisplay;
+let drawsDisplay;
 mapColor.set('Yellow','#cee86bcc');
 mapColor.set('Red','#c92c2c9c');
 document.addEventListener('DOMContentLoaded', init);
@@ -21,26 +27,33 @@ async function init() {
     window.addEventListener("load", function () {
         colorMessage(counter);
     })
-    document.getElementById("grid").addEventListener("click", play);
+    botSmartWinsDisplay=document.getElementById("botSmart-wins");
+    botRandomWinsDisplay=document.getElementById("botRandom-wins");
+    drawsDisplay=document.getElementById("draws");
+
     document.getElementById("grid").addEventListener("click", function () {
         if (!gameOver) colorMessage(counter);
     });
+    play();
 
 }
 
-async function play(event) {
-    if (gameOver || isMoveIllegal(event)) return
-    let id = event.target.id;
-    let tab = id.split(" ");
-    gameOver = !startPlay(tab);
-    counter++;
-    if (gameOver || isMoveIllegal(event)) return
-    await new Promise(r => setTimeout(r, 50));
-    let move = await getBestColumnToPlayIn(toTab());
-    gameOver = !startPlay(move);
-    counter++;
-    if (!gameOver)  colorMessage(counter);
-
+async function play() {
+    while(true){
+        if (gameOver ) break
+        let firstTab= toTab();
+        let tab = [getRandomMove(firstTab)];
+        gameOver = !startPlay(tab);
+        counter++;
+        if (gameOver) break
+        colorMessage(counter);
+        await new Promise(r => setTimeout(r, 50));
+        let move = await getBestColumnToPlayIn(toTab());
+        gameOver = !startPlay(move);
+        counter++;
+        if (!gameOver)  colorMessage(counter);
+    }
+    resetGame();
 }
 
 /**
@@ -69,14 +82,24 @@ function startPlay(tab) {
     id = column + " " + line;
     document.getElementById(id).style.backgroundColor = color;
     if (counter === 41) {
-        console.log("Draw!");
+        draw+=1;
+        drawsDisplay.textContent=draw;
         document.getElementById("message").innerText = "Draw!";
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
         return false;
     }
     if (checkWin() === true) {
-        console.log(color + " player wins!");
+        if (color==="red")
+        {
+            botSmartVictories+=1;
+            botSmartWinsDisplay.textContent=botSmartVictories;
+        }
+        else
+        {
+            botRandomVictories+=1
+            botRandomWinsDisplay.textContent=botRandomVictories;
+        }
         document.getElementById("message").innerText = color + " player wins!";
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
@@ -102,14 +125,13 @@ function resetGame() {
     counter = 0;
     document.getElementById("message").innerText = "";
     document.getElementById("reset-button").style.display = "none";
+    play();
 }
 
 
 function colorMessage(counter) {
     let color = 'Red';
     if (counter % 2 === 0) color = 'Yellow';
-    console.log("COUNNTTERR")
-    console.log(counter)
     document.getElementById("body").style.backgroundColor = mapColor.get(color);
     document.getElementById("player").innerText = color + " turn to play";
 }
@@ -216,7 +238,7 @@ let newBoardAfterMove;
 function getBestColumnToPlayIn(board) {
     moveWinsInMC = Array(7).fill(0);
     start = performance.now();
-    return monteCarlo(board, 1, start,2000);
+    return monteCarlo(board, 1, start,100);
 }
 
 function getLegalMoves(board) {
@@ -284,7 +306,7 @@ function monteCarlo(board, player, start,time) {
         let iteration=0;
         let timer = performance.now();
         while (notFinished) {
-            while (performance.now() - timer <= time/10&&notFinished){
+            while (performance.now() - timer <= time/10 && notFinished){
 
                 for (const move of legalMovesInMC) {
                     iteration++;
@@ -302,20 +324,21 @@ function monteCarlo(board, player, start,time) {
                     }
                     moveWinsInMC[move] += result === player ? 1 : result === 0 ? 0.5 : 0;
                     simulationsInMC++;
-                    if (performance.now() - start >= time) {
-                        notFinished=false;
-                    } // stop if time limit reached
+                    if (performance.now() - start >= time) break;
                 }
-                if (performance.now() - start >= time) break;
+                if (performance.now() - start >= time)
+                {
+                    notFinished=false;
+                    break;
+                }
             }
-            if (performance.now() - start >= time) break;
             let currentMax = Math.max(...moveWinsInMC);
             let threshold = 0.8+ (Math.min(1,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
             let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
             if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
+
             timer=performance.now();
         }
-
         let c = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
         if(Math.max(...moveWinsInMC) === 0){
             c = legalMovesInMC[0];
