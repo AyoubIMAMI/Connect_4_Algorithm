@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', init);
  */
 
 window.addEventListener('load', async function () {
-        counter = getCount();
-        console.log(counter);
         colorMessage(counter);
 
     }
@@ -39,9 +37,9 @@ async function play(event) {
     if (gameOver || isMoveIllegal(event)) return
     await new Promise(r => setTimeout(r, 50));
     let move = await getBestColumnToPlayIn(toTab());
-    console.log(move);
     gameOver = !startPlay(move);
     counter++;
+    if (!gameOver)  colorMessage(counter);
 
 }
 
@@ -52,7 +50,6 @@ async function play(event) {
  */
 function startPlay(tab) {
     removeIllegalMove();
-    console.log(document.cookie.toString())
     let color = 'red';
     if (counter % 2 === 0) color = 'yellow';
 
@@ -70,7 +67,6 @@ function startPlay(tab) {
 
     line++;
     id = column + " " + line;
-    console.log(id);
     document.getElementById(id).style.backgroundColor = color;
     if (counter === 41) {
         console.log("Draw!");
@@ -112,6 +108,8 @@ function resetGame() {
 function colorMessage(counter) {
     let color = 'Red';
     if (counter % 2 === 0) color = 'Yellow';
+    console.log("COUNNTTERR")
+    console.log(counter)
     document.getElementById("body").style.backgroundColor = mapColor.get(color);
     document.getElementById("player").innerText = color + " turn to play";
 }
@@ -134,10 +132,6 @@ function checkWin() {
     }
     return winner;}
 
-function getCount(){
-    console.log(littleCount);
-    return littleCount;
-}
 function removeIllegalMove() {
     document.getElementById("message").innerText = "";
 }
@@ -322,17 +316,11 @@ function monteCarlo(board, player, start,time) {
                 if (performance.now() - start >= time) break;
             }
             if (performance.now() - start >= time) break;
-            console.log(performance.now() - timer);
             let currentMax = Math.max(...moveWinsInMC);
             let threshold = 0.8+ (Math.min(0.99,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
-            console.log("threshold")
-            console.log(threshold)
             let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
             if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
-            console.log("proba");
-            console.log(moveWinsInMC);
-            console.log("futur all moves:");
-            console.log(legalMovesInMC);
+
             timer=performance.now();
         }
         setTimeout(resolve,0,finalMove);
