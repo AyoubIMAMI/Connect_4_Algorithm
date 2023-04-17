@@ -39,11 +39,10 @@ async function init() {
 }
 
 async function play() {
-    console.log("LEADER BOARD");
-    console.log([botSmartVictories,draw,botRandomVictories]);
     while(true){
         if (gameOver ) break
-        let tab = [getRandomMove(toTab())];
+        let firstTab= toTab();
+        let tab = [getRandomMove(firstTab)];
         gameOver = !startPlay(tab);
         counter++;
         if (gameOver) break
@@ -85,7 +84,6 @@ function startPlay(tab) {
     if (counter === 41) {
         draw+=1;
         drawsDisplay.textContent=draw;
-        console.log("Draw!");
         document.getElementById("message").innerText = "Draw!";
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
@@ -102,7 +100,6 @@ function startPlay(tab) {
             botRandomVictories+=1
             botRandomWinsDisplay.textContent=botRandomVictories;
         }
-        console.log(color + " player wins!");
         document.getElementById("message").innerText = color + " player wins!";
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
@@ -135,8 +132,6 @@ function resetGame() {
 function colorMessage(counter) {
     let color = 'Red';
     if (counter % 2 === 0) color = 'Yellow';
-    console.log("COUNNTTERR")
-    console.log(counter)
     document.getElementById("body").style.backgroundColor = mapColor.get(color);
     document.getElementById("player").innerText = color + " turn to play";
 }
@@ -243,7 +238,7 @@ let newBoardAfterMove;
 function getBestColumnToPlayIn(board) {
     moveWinsInMC = Array(7).fill(0);
     start = performance.now();
-    return monteCarlo(board, 1, start,2000);
+    return monteCarlo(board, 1, start,100);
 }
 
 function getLegalMoves(board) {
@@ -311,7 +306,7 @@ function monteCarlo(board, player, start,time) {
         let iteration=0;
         let timer = performance.now();
         while (notFinished) {
-            while (performance.now() - timer <= time/10){
+            while (performance.now() - timer <= time/10 && notFinished){
 
                 for (const move of legalMovesInMC) {
                     iteration++;
@@ -329,27 +324,27 @@ function monteCarlo(board, player, start,time) {
                     }
                     moveWinsInMC[move] += result === player ? 1 : result === 0 ? 0.5 : 0;
                     simulationsInMC++;
-                    if (performance.now() - start >= time) {
-                        let c = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
-                        if(Math.max(...moveWinsInMC) === 0){
-                            c = legalMovesInMC[0];
-                        }
-                        let r = findRaw(board,c);
-                        finalMove=[c, r];
-                        notFinished=false;
-                        break;
-                    } // stop if time limit reached
+                    if (performance.now() - start >= time) break;
                 }
-                if (performance.now() - start >= time) break;
+                if (performance.now() - start >= time)
+                {
+                    notFinished=false;
+                    break;
+                }
             }
-            if (performance.now() - start >= time) break;
             let currentMax = Math.max(...moveWinsInMC);
-            let threshold = 0.8+ (Math.min(0.99,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
+            let threshold = 0.8+ (Math.min(1,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
             let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
             if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
 
             timer=performance.now();
         }
+        let c = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
+        if(Math.max(...moveWinsInMC) === 0){
+            c = legalMovesInMC[0];
+        }
+        let r = findRaw(board,c);
+        finalMove=[c, r];
         setTimeout(resolve,0,finalMove);
     });
 }

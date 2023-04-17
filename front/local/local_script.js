@@ -284,7 +284,7 @@ function monteCarlo(board, player, start,time) {
         let iteration=0;
         let timer = performance.now();
         while (notFinished) {
-            while (performance.now() - timer <= time/10){
+            while (performance.now() - timer <= time/10&&notFinished){
 
                 for (const move of legalMovesInMC) {
                     iteration++;
@@ -303,26 +303,25 @@ function monteCarlo(board, player, start,time) {
                     moveWinsInMC[move] += result === player ? 1 : result === 0 ? 0.5 : 0;
                     simulationsInMC++;
                     if (performance.now() - start >= time) {
-                        let c = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
-                        if(Math.max(...moveWinsInMC) === 0){
-                            c = legalMovesInMC[0];
-                        }
-                        let r = findRaw(board,c);
-                        finalMove=[c, r];
                         notFinished=false;
-                        break;
                     } // stop if time limit reached
                 }
                 if (performance.now() - start >= time) break;
             }
             if (performance.now() - start >= time) break;
             let currentMax = Math.max(...moveWinsInMC);
-            let threshold = 0.8+ (Math.min(0.99,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
+            let threshold = 0.8+ (Math.min(1,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
             let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
             if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
-
             timer=performance.now();
         }
+
+        let c = moveWinsInMC.indexOf(Math.max(...moveWinsInMC));
+        if(Math.max(...moveWinsInMC) === 0){
+            c = legalMovesInMC[0];
+        }
+        let r = findRaw(board,c);
+        finalMove=[c, r];
         setTimeout(resolve,0,finalMove);
     });
 }
