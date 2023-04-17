@@ -65,7 +65,7 @@ function isTie(board) {
  * @param column column of the last move
  * @returns {boolean} boolean
  */
-function isWin(board, line,column) {
+function isWin(board, line, column) {
     const player = board[column][line];
     let count = 1;
     let j = line;
@@ -139,8 +139,79 @@ function isWin(board, line,column) {
     return count >= 4;
 }
 
+/**
+ * Verify if the given player won.
+ * The given player is 1 for the AI and -1 for the human.
+ * @param board as an array
+ * @param player 1 or -1
+ * @returns {boolean} true if there is a winner
+ */
+function isThereAWinner(board, player) {
+    const rows = board.length;
+    const cols = board[0].length;
+
+    // Check vertical
+    for (let i = 0; i < rows - 3; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (
+                board[i][j] === player &&
+                board[i + 1][j] === player &&
+                board[i + 2][j] === player &&
+                board[i + 3][j] === player
+            ) {
+                return true;
+            }
+        }
+    }
+
+    // Check horizontal
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols - 3; j++) {
+            if (
+                board[i][j] === player &&
+                board[i][j + 1] === player &&
+                board[i][j + 2] === player &&
+                board[i][j + 3] === player
+            ) {
+                return true;
+            }
+        }
+    }
+
+    // Check diagonal (top-left to bottom-right)
+    for (let i = 0; i < rows - 3; i++) {
+        for (let j = 0; j < cols - 3; j++) {
+            if (
+                board[i][j] === player &&
+                board[i + 1][j + 1] === player &&
+                board[i + 2][j + 2] === player &&
+                board[i + 3][j + 3] === player
+            ) {
+                return true;
+            }
+        }
+    }
+
+    // Check diagonal (bottom-left to top-right)
+    for (let i = 3; i < rows; i++) {
+        for (let j = 0; j < cols - 3; j++) {
+            if (
+                board[i][j] === player &&
+                board[i - 1][j + 1] === player &&
+                board[i - 2][j + 2] === player &&
+                board[i - 3][j + 3] === player
+            ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 exports.getLegalMoves = getLegalMoves;
 exports.getRandomMove = getRandomMove;
 exports.findRow = findRow;
 exports.isTie = isTie;
 exports.isWin = isWin;
+exports.isThereAWinner = isThereAWinner;
