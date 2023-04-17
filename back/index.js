@@ -14,7 +14,7 @@ app.get('/move', async (request, response) => {
 
     // Verify the board format
     if (!inputManager.isBoardValid(board))
-        return response.status(400).send("Invalid board format");
+        return response.status(400).send("Invalid board format: it must be not null, contains 42 characters and only contains 'm', 'h', and '0'");
 
     // Verify the board consistency
     if(!inputManager.isBoardLegal(board))
@@ -23,7 +23,7 @@ app.get('/move', async (request, response) => {
     // Verify if it is the AI turn to play and if the human played twice
     let moveDifference = inputManager.moveCounter(board);
     if(moveDifference === 0) response.status(422).json({detail: "Not the AI turn to play"});
-    else if(moveDifference !== 1) return response.status(400).send("Illegal board");
+    else if(moveDifference !== 1) return response.status(400).send("Illegal board: the player or the AI has played twice");
 
     try {
         // Get the move: the column
