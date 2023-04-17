@@ -8,7 +8,7 @@ This is a nodeJS REST-API application to play to the Connect4 game. The used alg
 
 
 ### Play against the AI
-[Here](https://ayoubimami.github.io/connect4/front/local_game.html) you can find a simple html page allowing you to play against our AI.<br>
+[Here](https://ayoubimami.github.io/connect4/tryOn/botGame.html) you can find a simple html page allowing you to play against our AI.<br>
 The AI has 2 seconds to play.
 
 # How to run the project
