@@ -3,6 +3,9 @@
  * Here, the board format is a string containing 42 characters which can only b 'm', 'h', and '0'
  */
 
+const gameManager = require("../game/gameManager");
+const gameController = require("../game/gameController");
+
 /**
  * Verify if the board format is valid:
  * - Not null
@@ -46,6 +49,18 @@ function moveCounter(board){
         else if (board[i] === 'm') difference--;
     }
     return difference;
+}
+
+/**
+ * Verify if there is board is already on a finished configuration: draw or a winner
+ * @param board as a string
+ * @returns {boolean} true if the game is finished
+ */
+function isGameFinished(board) {
+    const arrayBoard = gameController.boardConverter(board);
+    return gameManager.isTie(arrayBoard) // Verify if there is a draw
+        || gameManager.isThereAWinner(arrayBoard, -1) // Verify if the human won
+        || gameManager.isThereAWinner(arrayBoard, 1); // Verify if the AI won
 }
 
 exports.isBoardValid = isBoardValid;
