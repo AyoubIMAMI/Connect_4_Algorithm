@@ -25,13 +25,13 @@ app.get('/move', async (request, response) => {
     if(moveDifference === 0) response.status(422).json({detail: "Not the AI turn to play"});
     else if(moveDifference !== 1) return response.status(400).send("Illegal board");
 
-    try {
+
         // Get the move: the column
+        console.log("TESTTTT")
         let column = await gameManager.play(board);
+        console.log("the column");
+        console.log(column);
         response.status(200).json({column: column});
-    } catch (e) {
-        response.status(422).json({detail: e.message});
-    }
 });
 
 // Starting the server
