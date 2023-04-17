@@ -25,6 +25,9 @@ app.get('/move', async (request, response) => {
     if(moveDifference === 0) response.status(422).json({detail: "Not the AI turn to play"});
     else if(moveDifference !== 1) return response.status(400).send("Illegal board: the player or the AI has played twice");
 
+    // Verify if the given board is not already in a finished configuration
+    if(inputManager.isGameFinished(board)) return response.status(422).send("Game is finished: there is a winner or a draw");
+
     try {
         // Get the move: the column
         let column = await gameManager.play(board);
