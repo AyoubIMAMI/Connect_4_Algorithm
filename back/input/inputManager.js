@@ -66,3 +66,4 @@ function isGameFinished(board) {
 exports.isBoardValid = isBoardValid;
 exports.isBoardLegal = isBoardLegal;
 exports.moveCounter = moveCounter;
+exports.isGameFinished = isGameFinished;
