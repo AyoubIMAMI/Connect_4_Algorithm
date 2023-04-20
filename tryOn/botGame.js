@@ -113,11 +113,15 @@ function resetGame() {
  * @param counter used to know if the color is yellow or red
  */
 function colorMessage(counter) {
+    let playerTurn = "Bot"
     let color = 'Red';
-    if (counter % 2 === 0) color = 'Yellow';
+    if (counter % 2 === 0) {
+        color = 'Yellow';
+        playerTurn = "Your";
+    }
     console.log(counter)
     document.getElementById("body").style.backgroundColor = mapColor.get(color);
-    document.getElementById("player").innerText = color + " turn to play";
+    document.getElementById("player").innerText = playerTurn + " turn to play";
 }
 
 /**
