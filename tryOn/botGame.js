@@ -174,6 +174,12 @@ function removeIllegalMove() {
     document.getElementById("message").innerText = "";
 }
 
+/**
+ * Check vertical
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkVertical(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -186,6 +192,12 @@ function checkVertical(i, j) {
     return count === 4;
 }
 
+/**
+ * Check horizontal
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkHorizontal(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -198,6 +210,12 @@ function checkHorizontal(i, j) {
     return count === 4;
 }
 
+/**
+ * Check diagonal
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkDiagonal(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -232,16 +250,23 @@ let moveWinsInMC;
 let simulationsInMC;
 let newBoardAfterMove;
 
+/**
+ * Get the best column to play in from our AI
+ * @param board
+ * @returns {Promise<unknown>}
+ */
 function getBestColumnToPlayIn(board) {
     moveWinsInMC = Array(7).fill(0);
     start = performance.now();
     return monteCarlo(board, 1, start,2000);
 }
 
+/**
+ * Returns an array of legal moves on the board.
+ * @param board
+ * @returns {*[]}
+ */
 function getLegalMoves(board) {
-    /**
-     * Returns an array of legal moves on the board.
-     */
     legalMovesToFind = [];
     for (let col = 0; col < 7; col++) {
         if (board[col][5] === 0) {
@@ -251,18 +276,18 @@ function getLegalMoves(board) {
     return legalMovesToFind;
 }
 
+/**
+ * Returns a random legal move on the board.
+ */
 function getRandomMove(board) {
-    /**
-     * Returns a random legal move on the board.
-     */
     legalMovesToGet = getLegalMoves(board);
     return legalMovesToGet[Math.floor(Math.random() * legalMovesToGet.length)];
 }
 
+/**
+ * Simulates a game on the board starting with the given player.
+ */
 function simulateGame(board, player) {
-    /**
-     * Simulates a game on the board starting with the given player.
-     */
     currPlayerSim = player;
     while (true) {
         moveSim = getRandomMove(board);
@@ -277,6 +302,12 @@ function simulateGame(board, player) {
     }
 }
 
+/**
+ * Find the lowest available raw
+ * @param board
+ * @param column
+ * @returns {number}
+ */
 function findRaw(board, column) {
     rowToFind = 5;
     while(board[column][rowToFind] === 0 && rowToFind > 0) {
@@ -289,12 +320,18 @@ function findRaw(board, column) {
 
 }
 
+/**
+ * Monte Carlo derived algorithm
+ * Runs the algorithm on the board for the given player.
+ * Simulates as many games as possible in 100ms and returns the best move based on the simulation results.
+ * @param board
+ * @param player
+ * @param start
+ * @param time
+ * @returns {Promise<unknown>}
+ */
 function monteCarlo(board, player, start,time) {
     return new Promise(function(resolve, reject) {
-        /**
-         * Runs the Monte Carlo algorithm on the board for the given player.
-         * Simulates as many games as possible in 100ms and returns the best move based on the simulation results.
-         */
         legalMovesInMC = getLegalMoves(board);
         simulationsInMC = 0;
         let finalMove;
@@ -345,10 +382,10 @@ function monteCarlo(board, player, start,time) {
     });
 }
 
+/**
+ * Returns a new board with the player's move made in the specified column.
+ */
 function makeMove(board, player, column) {
-    /**
-     * Returns a new board with the player's move made in the specified column.
-     */
     newBoardAfterMove = board.map(col => col.slice()); // Copy the board
     for (let row = 0; row < 6; row++) {
         if (newBoardAfterMove[column][row] === 0) {
@@ -359,10 +396,10 @@ function makeMove(board, player, column) {
     return null; // Column is full
 }
 
+/**
+ * Returns true if the board is full and there is no winner, false otherwise.
+ */
 function isTie(board) {
-    /**
-     * Returns true if the board is full and there is no winner, false otherwise.
-     */
     for (let col = 0; col < 7; col++) {
         if (board[col][5] === 0) {
             return false;
@@ -371,6 +408,13 @@ function isTie(board) {
     return true;
 }
 
+/**
+ * Verify the victory
+ * @param board
+ * @param line
+ * @param column
+ * @returns {boolean}
+ */
 function isWin(board, line,column) {
     const player = board[column][line];
     let count = 1;
@@ -405,7 +449,6 @@ function isWin(board, line,column) {
     }
 
     // Check diagonal (top-left to bottom-right)
-
     count = 1;
     i = column;
     j = line;
@@ -445,7 +488,10 @@ function isWin(board, line,column) {
     return count >= 4;
 }
 
-
+/**
+ * Convert into a tab
+ * @returns {*[]}
+ */
 function toTab(){
     let l = [];
     for (let j = 0; j < 7; j++) {
