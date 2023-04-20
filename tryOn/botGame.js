@@ -13,6 +13,7 @@ mapColor.set('Red','#c92c2c9c');
 // Initialization
 document.addEventListener('DOMContentLoaded', init);
 
+// Change the background color and display the player message
 window.addEventListener('load', async function () {
         colorMessage(counter);
     }

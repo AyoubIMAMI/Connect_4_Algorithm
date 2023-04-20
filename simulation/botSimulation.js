@@ -1,29 +1,39 @@
-let counter = 0;
+/**
+ * Managing the game to get some statistics from our AI
+ */
+
+let counter = 0; // Counter to know players turn
 let gameOver = false;
+
+// Colors
 const mapColor = new Map();
-let littleCount=0;
-let botSmartVictories=0;
-let botRandomVictories=0;
-let draw=0;
+mapColor.set('Yellow','#cee86bcc');
+mapColor.set('Red','#c92c2c9c');
+
+// Victories and draws count
+let botSmartVictories = 0;
+let botRandomVictories = 0;
+let draw = 0;
+
+// Displays
 let botSmartWinsDisplay;
 let botRandomWinsDisplay;
 let drawsDisplay;
-mapColor.set('Yellow','#cee86bcc');
-mapColor.set('Red','#c92c2c9c');
-document.addEventListener('DOMContentLoaded', init);
-/**
- * This class manage the local game
- *
- */
 
+// Initialization
+document.addEventListener('DOMContentLoaded', init);
+
+// Change the background color and display the player message
 window.addEventListener('load', async function () {
         colorMessage(counter);
-
     }
 )
 
+/**
+ * Initialization
+ * @returns {Promise<void>}
+ */
 async function init() {
-
     window.addEventListener("load", function () {
         colorMessage(counter);
     })
@@ -35,9 +45,12 @@ async function init() {
         if (!gameOver) colorMessage(counter);
     });
     play();
-
 }
 
+/**
+ * Do the move
+ * @returns {Promise<void>}
+ */
 async function play() {
     while(true){
         if (gameOver ) break
@@ -62,7 +75,6 @@ async function play() {
  * @returns {boolean|void}
  */
 function startPlay(tab) {
-    removeIllegalMove();
     let color = 'red';
     if (counter % 2 === 0) color = 'yellow';
 
@@ -70,8 +82,6 @@ function startPlay(tab) {
     let line = 5;
 
     let id = column + " " + line;
-
-
 
     while (line >=0 && document.getElementById(id).style.backgroundColor === "") {
         line--;
@@ -105,15 +115,12 @@ function startPlay(tab) {
         document.getElementById("reset-button").addEventListener("click", resetGame);
         return false;
     }
-
-
     return true;
 }
 
 /**
- * play again when the game is finished
+ * Play again when the game is finished
  */
-
 function resetGame() {
     gameOver = false;
     for (let i = 0; i < 6; i++) {
@@ -128,7 +135,10 @@ function resetGame() {
     play();
 }
 
-
+/**
+ * Display a message and change the background color
+ * @param counter
+ */
 function colorMessage(counter) {
     let color = 'Red';
     if (counter % 2 === 0) color = 'Yellow';
@@ -136,6 +146,10 @@ function colorMessage(counter) {
     document.getElementById("player").innerText = color + " turn to play";
 }
 
+/**
+ * Verify the victory
+ * @returns {boolean}
+ */
 function checkWin() {
     let winner = false;
     for (let j = 0; j < 6; j++) {
@@ -154,26 +168,12 @@ function checkWin() {
     }
     return winner;}
 
-function removeIllegalMove() {
-    document.getElementById("message").innerText = "";
-}
-function isMoveIllegal(event){
-    let id = event.target.id;
-    let tab = id.split(" ");
-    let column = tab[0];
-    let line = 5;
-
-    id = column + " " + line;
-    if (document.getElementById(id).style.backgroundColor !== "") {
-        printIllegalMove();
-        return true;
-    }
-    return false;
-}
-function printIllegalMove() {
-    document.getElementById("message").innerText = "Illegal move!";
-}
-
+/**
+ * Check vertical
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkVertical(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -186,6 +186,12 @@ function checkVertical(i, j) {
     return count === 4;
 }
 
+/**
+ * Check horizontal
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkHorizontal(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -198,6 +204,12 @@ function checkHorizontal(i, j) {
     return count === 4;
 }
 
+/**
+ * Check diagonal
+ * @param i line
+ * @param j column
+ * @returns {boolean} true on win
+ */
 function checkDiagonal(i, j) {
     let color = document.getElementById(i + " " + j).style.backgroundColor;
     let count = 0;
@@ -216,13 +228,11 @@ function checkDiagonal(i, j) {
             count++;
         } else break;
     }
-    if (count === 4) return true;
-    return false;
+    return count === 4;
+
 }
 
-
 //======================================================================================================= IA Part
-
 
 let start;
 let legalMovesToFind;
@@ -235,16 +245,23 @@ let moveWinsInMC;
 let simulationsInMC;
 let newBoardAfterMove;
 
+/**
+ * Get the best column to play in from our AI
+ * @param board
+ * @returns {Promise<unknown>}
+ */
 function getBestColumnToPlayIn(board) {
     moveWinsInMC = Array(7).fill(0);
     start = performance.now();
     return monteCarlo(board, 1, start,100);
 }
 
+/**
+ * Returns an array of legal moves on the board.
+ * @param board
+ * @returns {*[]}
+ */
 function getLegalMoves(board) {
-    /**
-     * Returns an array of legal moves on the board.
-     */
     legalMovesToFind = [];
     for (let col = 0; col < 7; col++) {
         if (board[col][5] === 0) {
@@ -254,18 +271,18 @@ function getLegalMoves(board) {
     return legalMovesToFind;
 }
 
+/**
+ * Returns a random legal move on the board.
+ */
 function getRandomMove(board) {
-    /**
-     * Returns a random legal move on the board.
-     */
     legalMovesToGet = getLegalMoves(board);
     return legalMovesToGet[Math.floor(Math.random() * legalMovesToGet.length)];
 }
 
+/**
+ * Simulates a game on the board starting with the given player.
+ */
 function simulateGame(board, player) {
-    /**
-     * Simulates a game on the board starting with the given player.
-     */
     currPlayerSim = player;
     while (true) {
         moveSim = getRandomMove(board);
@@ -280,6 +297,12 @@ function simulateGame(board, player) {
     }
 }
 
+/**
+ * Find the lowest available raw
+ * @param board
+ * @param column
+ * @returns {number}
+ */
 function findRaw(board, column) {
     rowToFind = 5;
     while(board[column][rowToFind] === 0 && rowToFind > 0) {
@@ -292,12 +315,18 @@ function findRaw(board, column) {
 
 }
 
+/**
+ * Monte Carlo derived algorithm
+ * Runs the algorithm on the board for the given player.
+ * Simulates as many games as possible in 100ms and returns the best move based on the simulation results.
+ * @param board
+ * @param player
+ * @param start
+ * @param time
+ * @returns {Promise<unknown>}
+ */
 function monteCarlo(board, player, start,time) {
     return new Promise(function(resolve, reject) {
-        /**
-         * Runs the Monte Carlo algorithm on the board for the given player.
-         * Simulates as many games as possible in 100ms and returns the best move based on the simulation results.
-         */
         legalMovesInMC = getLegalMoves(board);
         simulationsInMC = 0;
         let finalMove;
@@ -349,10 +378,10 @@ function monteCarlo(board, player, start,time) {
     });
 }
 
+/**
+ * Returns a new board with the player's move made in the specified column.
+ */
 function makeMove(board, player, column) {
-    /**
-     * Returns a new board with the player's move made in the specified column.
-     */
     newBoardAfterMove = board.map(col => col.slice()); // Copy the board
     for (let row = 0; row < 6; row++) {
         if (newBoardAfterMove[column][row] === 0) {
@@ -363,10 +392,10 @@ function makeMove(board, player, column) {
     return null; // Column is full
 }
 
+/**
+ * Returns true if the board is full and there is no winner, false otherwise.
+ */
 function isTie(board) {
-    /**
-     * Returns true if the board is full and there is no winner, false otherwise.
-     */
     for (let col = 0; col < 7; col++) {
         if (board[col][5] === 0) {
             return false;
@@ -375,6 +404,13 @@ function isTie(board) {
     return true;
 }
 
+/**
+ * Verify the victory
+ * @param board
+ * @param line
+ * @param column
+ * @returns {boolean}
+ */
 function isWin(board, line,column) {
     const player = board[column][line];
     let count = 1;
@@ -409,7 +445,6 @@ function isWin(board, line,column) {
     }
 
     // Check diagonal (top-left to bottom-right)
-
     count = 1;
     i = column;
     j = line;
@@ -445,11 +480,13 @@ function isWin(board, line,column) {
         j--;
         count++;
     }
-
     return count >= 4;
 }
 
-
+/**
+ * Convert into a tab
+ * @returns {*[]}
+ */
 function toTab(){
     let l = [];
     for (let j = 0; j < 7; j++) {
