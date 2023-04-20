@@ -80,5 +80,5 @@ m h m h h h .
 |-------------|------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 200 (OK)    | JSON | {column: int}     | `Column` contains an integer representing the number of the column to be played. **Column indexes: from 1 to 7**                                                                                                    |
 | 400         | Text | Error message     | `Invalid board format`: it must be not null, contains 42 characters and only contains 'm', 'h', and '0' <br> `Illegal board`: token floating in the air <br> `Illegal board`: the player or the AI has played twice |
-| 422         | JSON | {detail: string}  | `Turn`: Not the AI turn to play <br> `Party over`: the party is over                                                                                                                                                |
+| 422         | JSON | {detail: string}  | `Turn`: Not the AI turn to play <br> `Game over`: The game is over                                                                                                                                                  |
 
