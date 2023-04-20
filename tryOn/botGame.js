@@ -60,10 +60,10 @@ async function play(event) {
 function startPlay(tab) {
     removeIllegalMove();
     let color = 'red';
-    let playerWinner = "Bot"
+    let winnerMessage = "Bot wins!"
     if (counter % 2 === 0) {
         color = 'yellow';
-        playerWinner = "You"
+        winnerMessage = "You won!"
     }
 
     let column = tab[0];
@@ -88,7 +88,7 @@ function startPlay(tab) {
     }
     if (checkWin() === true) {
         console.log(color + " player wins!");
-        document.getElementById("message").innerText = playerWinner + " player wins!";
+        document.getElementById("message").innerText = winnerMessage;
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
         return false;
@@ -108,6 +108,7 @@ function resetGame() {
         }
     }
     counter = 0;
+    colorMessage(counter);
     document.getElementById("message").innerText = "";
     document.getElementById("reset-button").style.display = "none";
 }
