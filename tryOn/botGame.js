@@ -1,23 +1,28 @@
-let counter = 0;
+/**
+ * Managing the game to allow to a human to play against our AI
+ */
+
+let counter = 0; // Counter to know players turn
 let gameOver = false;
+
+// Colors
 const mapColor = new Map();
-let littleCount=0;
 mapColor.set('Yellow','#cee86bcc');
 mapColor.set('Red','#c92c2c9c');
+
+// Initialization
 document.addEventListener('DOMContentLoaded', init);
-/**
- * This class manage the local game
- *
- */
 
 window.addEventListener('load', async function () {
         colorMessage(counter);
-
     }
 )
 
+/**
+ * Initialize the page with colors and event listeners
+ * @returns {Promise<void>} void
+ */
 async function init() {
-
     window.addEventListener("load", function () {
         colorMessage(counter);
     })
@@ -25,9 +30,13 @@ async function init() {
     document.getElementById("grid").addEventListener("click", function () {
         if (!gameOver) colorMessage(counter);
     });
-
 }
 
+/**
+ * Do the move where the click has been made
+ * @param event click
+ * @returns {Promise<void>} void
+ */
 async function play(event) {
     if (gameOver || isMoveIllegal(event)) return
     let id = event.target.id;
@@ -40,13 +49,12 @@ async function play(event) {
     gameOver = !startPlay(move);
     counter++;
     if (!gameOver)  colorMessage(counter);
-
 }
 
 /**
- * return false if the game is finished and true is the person still plays
- * @param tab
- * @returns {boolean|void}
+ * return false if the game is finished and true if the person still plays
+ * @param tab board
+ * @returns {boolean|void} boolean
  */
 function startPlay(tab) {
     removeIllegalMove();
@@ -57,8 +65,6 @@ function startPlay(tab) {
     let line = 5;
 
     let id = column + " " + line;
-
-
 
     while (line >=0 && document.getElementById(id).style.backgroundColor === "") {
         line--;
@@ -82,15 +88,12 @@ function startPlay(tab) {
         document.getElementById("reset-button").addEventListener("click", resetGame);
         return false;
     }
-
-
     return true;
 }
 
 /**
  * play again when the game is finished
  */
-
 function resetGame() {
     gameOver = false;
     for (let i = 0; i < 6; i++) {
@@ -104,16 +107,22 @@ function resetGame() {
     document.getElementById("reset-button").style.display = "none";
 }
 
-
+/**
+ * Change the background color
+ * @param counter used to know if the color is yellow or red
+ */
 function colorMessage(counter) {
     let color = 'Red';
     if (counter % 2 === 0) color = 'Yellow';
-    console.log("COUNNTTERR")
     console.log(counter)
     document.getElementById("body").style.backgroundColor = mapColor.get(color);
     document.getElementById("player").innerText = color + " turn to play";
 }
 
+/**
+ * Verify the victory
+ * @returns {boolean} true if there is a winner
+ */
 function checkWin() {
     let winner = false;
     for (let j = 0; j < 6; j++) {
@@ -132,9 +141,11 @@ function checkWin() {
     }
     return winner;}
 
-function removeIllegalMove() {
-    document.getElementById("message").innerText = "";
-}
+/**
+ * Verify is the move is legal
+ * @param event click
+ * @returns {boolean} true if the move is legal
+ */
 function isMoveIllegal(event){
     let id = event.target.id;
     let tab = id.split(" ");
@@ -148,8 +159,19 @@ function isMoveIllegal(event){
     }
     return false;
 }
+
+/**
+ * Display the illegal move message
+ */
 function printIllegalMove() {
     document.getElementById("message").innerText = "Illegal move!";
+}
+
+/**
+ * Remove the illegal move message
+ */
+function removeIllegalMove() {
+    document.getElementById("message").innerText = "";
 }
 
 function checkVertical(i, j) {
@@ -194,13 +216,10 @@ function checkDiagonal(i, j) {
             count++;
         } else break;
     }
-    if (count === 4) return true;
-    return false;
+    return count === 4;
 }
 
-
 //======================================================================================================= IA Part
-
 
 let start;
 let legalMovesToFind;
@@ -311,8 +330,8 @@ function monteCarlo(board, player, start,time) {
             if (performance.now() - start >= time) break;
             let currentMax = Math.max(...moveWinsInMC);
             let threshold = 0.8+ (Math.min(1,((performance.now() - start)/time))*0.2); // Set the threshold to 20%
-            let newlegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
-            if (newlegalMovesInMC.length>1) legalMovesInMC=newlegalMovesInMC;
+            let newLegalMovesInMC = legalMovesInMC.filter(index=> moveWinsInMC[index] >= currentMax * threshold);
+            if (newLegalMovesInMC.length>1) legalMovesInMC=newLegalMovesInMC;
             timer=performance.now();
         }
 
