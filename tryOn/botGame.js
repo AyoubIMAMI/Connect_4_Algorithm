@@ -60,7 +60,11 @@ async function play(event) {
 function startPlay(tab) {
     removeIllegalMove();
     let color = 'red';
-    if (counter % 2 === 0) color = 'yellow';
+    let playerWinner = "Bot"
+    if (counter % 2 === 0) {
+        color = 'yellow';
+        playerWinner = "You"
+    }
 
     let column = tab[0];
     let line = 5;
@@ -84,7 +88,7 @@ function startPlay(tab) {
     }
     if (checkWin() === true) {
         console.log(color + " player wins!");
-        document.getElementById("message").innerText = color + " player wins!";
+        document.getElementById("message").innerText = playerWinner + " player wins!";
         document.getElementById("reset-button").style.display = "block";
         document.getElementById("reset-button").addEventListener("click", resetGame);
         return false;
