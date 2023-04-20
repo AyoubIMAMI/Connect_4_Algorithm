@@ -21,7 +21,7 @@ app.get('/move', async (request, response) => {
         return response.status(400).send("Illegal board: token floating in the air");
 
     // Verify if the given board is not already in a finished configuration
-    if(inputManager.isGameFinished(board)) return response.status(422).send("Game is finished: there is a winner or a draw");
+    if(inputManager.isGameFinished(board)) return response.status(422).send({detail:"Game is finished: there is a winner or a draw"});
 
     // Verify if it is the AI turn to play and if the human played twice
     let moveDifference = inputManager.moveCounter(board);
